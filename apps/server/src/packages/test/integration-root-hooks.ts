@@ -5,10 +5,12 @@ import { Context } from 'mocha';
 
 // local deps
 import KnexClient from '../postgres-service/knex-client';
+import { ApiService } from '../api-service/Api.service';
 
 declare module 'mocha' {
   export interface Context {
     knexClient: KnexClient;
+    apiService: ApiService;
   }
 }
 
@@ -17,11 +19,17 @@ export type TestContext = Mocha.Context & Context;
 
 export const mochaHooks: Mocha.RootHookObject = {
   async beforeAll(this: Mocha.Context) {
-    const knexClient = Container.get(KnexClient);
-    await knexClient.isConnected();
-    this.knexClient = knexClient;
+    this.knexClient = Container.get(KnexClient);
+    await this.knexClient.isConnected();
+
+    this.apiService = Container.get(ApiService);
+    await this.apiService.init();
+    await this.apiService.isListening();
   },
   async afterAll(this: Mocha.Context) {
+    if (this.apiService) {
+      await this.apiService.shutdown();
+    }
     if (this.knexClient) {
       await this.knexClient.destroy();
     }
