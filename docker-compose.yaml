@@ -1,0 +1,215 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: .
+      target: api-dev
+    image: audioshake-project/api:latest
+    env_file:
+      - .env.docker.development
+    environment:
+      NODE_ENV: 'development'
+      API_PORT: 4001
+      POSTGRES_HOST: audioshake-project-postgres-1
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_NAME: audioshake-project
+      CONTAINER_ID: 1
+    user: '0:0'
+    ports:
+      - '127.0.0.1:4001:4001'
+    volumes:
+      - './apps/server/src:/apps/server/src'
+      - './apps/server/package.json:/apps/server/package.json'
+      - './apps/server/pnpm-lock.yaml:/apps/server/pnpm-lock.yaml'
+    depends_on:
+      - postgres
+      - migrate
+  api-test:
+    build:
+      context: .
+      target: api-dev
+    image: audioshake-project/api:latest
+    container_name: api-test
+    env_file:
+      - .env.docker.test
+    environment:
+      NODE_ENV: "test"
+      API_PORT: 4002
+      API_CLIENT_HOST: "api-test"
+      API_CLIENT_PORT: 4002
+      POSTGRES_HOST: audioshake-project-postgres-test-1
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_NAME: test
+      CONTAINER_ID: 1
+    user: "0:0"
+    ports:
+      - "127.0.0.1:4002:4002"
+    volumes:
+      - './apps/server/src:/apps/server/src'
+      - './apps/server/package.json:/apps/server/package.json'
+      - './apps/server/pnpm-lock.yaml:/apps/server/pnpm-lock.yaml'
+    depends_on:
+      - migrate-test
+      - postgres-test
+  postgres:
+    image: postgres:14.5
+    environment:
+      - NODE_ENV=development
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=audioshake-project
+    env_file:
+      - .env.docker.development
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+  postgres-test:
+    image: postgres:14.5
+    environment:
+      - NODE_ENV=test
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=test
+    env_file:
+      - .env.docker.test
+    ports:
+      - '5433:5432'
+  migrate:
+    build:
+      context: .
+      target: api-dev
+    image: audioshake-project/api:latest
+    env_file:
+      - .env.docker.development
+    environment:
+      NODE_ENV: 'development'
+      API_PORT: 4001
+      POSTGRES_HOST: audioshake-project-postgres-1
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_NAME: audioshake-project
+      CONTAINER_ID: 2
+    command:
+      'pnpm run migrate'
+    volumes:
+      - './apps/server/src:/apps/server/src'
+      - './apps/server/package.json:/apps/server/package.json'
+      - './apps/server/pnpm-lock.yaml:/apps/server/pnpm-lock.yaml'
+    depends_on:
+      - postgres
+  migrate-test:
+    build:
+      context: .
+      target: api-test
+    image: audioshake-project/api-test:latest
+    env_file:
+      - .env.docker.test
+    environment:
+      NODE_ENV: 'test'
+      API_PORT: 4002
+      CONTAINER_ID: 2
+      POSTGRES_HOST: audioshake-project-postgres-test-1
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_NAME: test
+    command:
+      'pnpm run migrate'
+    volumes:
+      - './apps/server/src:/apps/server/src'
+      - './apps/server/package.json:/apps/server/package.json'
+      - './apps/server/pnpm-lock.yaml:/apps/server/pnpm-lock.yaml'
+    depends_on:
+      - postgres-test
+  test:
+    build:
+      context: .
+      target: api-test
+    image: audioshake-project/api-test:latest
+    env_file:
+      - .env.docker.test
+    environment:
+      NODE_ENV: 'test'
+      APOLLO_GRAPHQL_PORT: 4002
+      POSTGRES_HOST: audioshake-project-postgres-test-1
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_NAME: test
+      CONTAINER_ID: 2
+    volumes:
+      - './apps/server/src:/apps/server/src'
+      - './apps/server/package.json:/apps/server/package.json'
+      - './apps/server/pnpm-lock.yaml:/apps/server/pnpm-lock.yaml'
+  integration:
+    build:
+      context: .
+      target: api-test
+    image: audioshake-project/api:latest
+    env_file:
+      - .env.docker.test
+    environment:
+      NODE_ENV: 'test'
+      API_PORT: 4002
+      API_CLIENT_HOST: localhost
+      API_CLIENT_PORT: 4002
+      CONTAINER_ID: 1
+      POSTGRES_HOST: audioshake-project-postgres-test-1
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_NAME: test
+      POSTGRES_PORT: 5432
+    command: 'pnpm run integration-tests'
+    volumes:
+      - './apps/server/src:/apps/server/src'
+      - './apps/server/package.json:/apps/server/package.json'
+      - './apps/server/pnpm-lock.yaml:/apps/server/pnpm-lock.yaml'
+    depends_on:
+      - postgres-test
+      - migrate-test
+  lint:
+    build:
+      context: .
+      target: api-test
+    image: audioshake-project/api-test:latest
+    env_file:
+      - .env.docker.test
+    command:
+      'pnpm run lint'
+    environment:
+      NODE_ENV: 'test'
+      API_PORT: 4002
+      CONTAINER_ID: 1
+    volumes:
+      - './apps/server/src:/apps/server/src'
+      - './apps/server/package.json:/apps/server/package.json'
+      - './apps/server/pnpm-lock.yaml:/apps/server/pnpm-lock.yaml'
+      - './apps/server/.eslintrc.json:/apps/server/.eslintrc.json'
+      - './apps/server/.eslintignore:/apps/server/.eslintignore'
+  format:
+    build:
+      context: .
+      target: api-test
+    image: audioshake-project/api-test:latest
+    env_file:
+      - .env.docker.test
+    command:
+      'pnpm run format'
+    environment:
+      NODE_ENV: 'test'
+      API_PORT: 4002
+      CONTAINER_ID: 1
+    volumes:
+      - './apps/server/src:/apps/server/src'
+      - './apps/server/package.json:/apps/server/package.json'
+      - './apps/server/pnpm-lock.yaml:/apps/server/pnpm-lock.yaml'
+      - './apps/server/.prettierrc:/apps/server/.prettierrc'
+volumes:
+  db:
+    driver: local

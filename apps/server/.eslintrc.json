@@ -1,0 +1,54 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "mocha"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "env": {
+    "browser": true,
+    "amd": true,
+    "node": true,
+    "mocha": true
+  },
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly",
+    "process": true
+  },
+  "rules": {
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": "off",
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ],
+    "@typescript-eslint/no-this-alias": [
+      "error",
+      {
+        "allowedNames": [
+          "self"
+        ]
+        // Allow `const vm= this`; `[]` by default
+      }
+    ],
+    // "@typescript-eslint/brace-style": ["error"],
+    "@typescript-eslint/semi": [
+      "error",
+      "always"
+    ]
+  }
+}
