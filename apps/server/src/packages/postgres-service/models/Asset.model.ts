@@ -10,6 +10,8 @@ import { ServerConfig } from '../../config';
 import { JsonSchemaTypes } from '../../types/JsonSchema.types';
 import { BaseModel } from './Base.model';
 import { UUID_V5_SCHEMA } from '../lib/constants';
+import { Model } from 'objection';
+import { PostModel } from './Post.model';
 
 const uploadValidator = joi.object({
   contentType: joi.string().required().custom(validateContentType),
@@ -35,6 +37,9 @@ export class AssetModel extends BaseModel {
 
   // (non-unique) name of uploaded file
   filename!: string;
+
+  // post that this asset belongs to
+  post?: PostModel;
 
   createdAt!: Date;
 
@@ -105,6 +110,19 @@ export class AssetModel extends BaseModel {
     return filename.replace(/[\\/:"*?<>|]+/, '-');
   }
 
+  static relationMappings() {
+    return {
+      post: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: PostModel,
+        join: {
+          from: `${AssetModel.tableName}.${AssetModel.idColumn[0]}`,
+          to: `${PostModel.tableName}.assetId`,
+        },
+      },
+    };
+  }
+
   static get jsonSchema() {
     return {
       type: 'object',
@@ -124,7 +142,7 @@ export class AssetModel extends BaseModel {
         'key',
         'contentType',
         'fileSize',
-        'filename'
+        'filename',
       ],
     };
   }

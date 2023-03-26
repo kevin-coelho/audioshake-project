@@ -20,8 +20,9 @@ describe('Postgres Service', function() {
       schemaname != 'information_schema';`;
     const response = await postgresService.getKnexClient().getClient().raw<TableSchemaResponse>(q);
     const tables = new Set(response.rows.map(row => row.tablename));
-    const { Asset } = postgresService.getModels();
+    const { Asset, Post } = postgresService.getModels();
     assert.isTrue(tables.has(Asset.tableName));
+    assert.isTrue(tables.has(Post.tableName));
   });
 });
 
