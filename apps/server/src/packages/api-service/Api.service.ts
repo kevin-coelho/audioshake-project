@@ -9,6 +9,7 @@ import { errors as celebrateErrors } from 'celebrate';
 import { ServerConfig } from '../config';
 import { PostgresService } from '../postgres-service';
 import { getRouter } from './routes';
+import { SwaggerService } from '../swagger-service/Swagger.service';
 
 /**
  * This class encapsulates the apollo graphql service (http server). IMPORTANT NOTE:
@@ -38,7 +39,7 @@ export class ApiService {
   }
 
   async init() {
-    this.applyMiddleware(this.app);
+    this.applyMiddleware();
     this.applyRoutes(this.app);
     this.applyErrorMiddleware(this.app);
 
@@ -56,8 +57,8 @@ export class ApiService {
     console.log(`🚀  Server ready on port :${this.config.api.port}`);
   }
 
-  applyMiddleware(app: Express) {
-    // pass
+  applyMiddleware(/*app: Express*/) {
+    //pass
   }
 
   applyErrorMiddleware(app: Express) {
@@ -66,6 +67,7 @@ export class ApiService {
 
   applyRoutes(app: Express) {
     app.use('/', getRouter());
+    app.use('/docs', ...SwaggerService.getSwaggerUIMiddlewares());
   }
 
   async isListening() {

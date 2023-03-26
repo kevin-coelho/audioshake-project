@@ -30,7 +30,7 @@ services:
     build:
       context: .
       target: api-dev
-    image: audioshake-project/api:latest
+    image: audioshake-project/api-test:latest
     container_name: api-test
     env_file:
       - .env.docker.test
@@ -151,7 +151,7 @@ services:
     build:
       context: .
       target: api-test
-    image: audioshake-project/api:latest
+    image: audioshake-project/api-test:latest
     env_file:
       - .env.docker.test
     environment:
