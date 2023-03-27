@@ -51,8 +51,8 @@ export function getPostFixtures() {
     const { contentType, filename, fileSize } = asset;
     const assetModel = AssetModel.fromUploadedAsset(
       contentType,
-      fileSize,
       filename,
+      fileSize,
     ).toJSON();
     return PostModel.fromJsonPost(
       title,

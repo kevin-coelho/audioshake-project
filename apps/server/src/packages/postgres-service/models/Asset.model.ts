@@ -72,6 +72,7 @@ export class AssetModel extends BaseModel {
   static fromUploadedAsset(
     contentType: string,
     filename: string,
+    fileSize?: number,
     bucket?: string,
   ): AssetModel {
     const { value, error } = uploadValidator.validate({
@@ -94,6 +95,9 @@ export class AssetModel extends BaseModel {
     assetModel.contentType = value.contentType;
     assetModel.key = key;
     assetModel.filename = sanitizedFilename;
+    if (fileSize) {
+      assetModel.fileSize = fileSize;
+    }
     const now = moment.utc().toDate();
     assetModel.createdAt = now;
     assetModel.updatedAt = now;

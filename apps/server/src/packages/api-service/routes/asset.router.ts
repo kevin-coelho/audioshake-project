@@ -50,7 +50,7 @@ export function getAssetRouter() {
               })
                 .on('httpUploadProgress', (event) => {
                   fileSize = event.total;
-                  console.log(`Upload ${event.loaded}/${event.total}`);
+                  // console.log(`Upload ${event.loaded}/${event.total}`);
                 })
                 .send((err: Error) => {
                   if (err) {

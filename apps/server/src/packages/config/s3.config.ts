@@ -19,7 +19,7 @@ export function parseConfigFromEnvironment(
   return {
     bucket: value.S3_BUCKET,
     bucketArn: value.S3_BUCKET_ARN,
-    accessKey: value.AWS_ACCESS_KEY,
+    accessKey: value.AWS_ACCESS_KEY_ID,
     secretAccessKey: value.AWS_SECRET_ACCESS_KEY,
   };
 }

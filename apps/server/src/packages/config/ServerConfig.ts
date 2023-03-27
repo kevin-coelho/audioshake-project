@@ -7,10 +7,12 @@ import * as PostgresConfig from './postgres.config';
 import * as CommonConfig from './common.config';
 import * as S3Config from './s3.config';
 import * as ApiConfig from './api.config';
+import * as ApiClientConfig from './api-client.config';
 import { PostgresConfigType } from './postgres.config';
 import { CommonConfigType } from './common.config';
 import { S3ConfigType } from './s3.config';
 import { ApiConfigType } from './api.config';
+import { ApiClientConfigType } from './api-client.config';
 
 @Service()
 export class ServerConfig {
@@ -32,5 +34,9 @@ export class ServerConfig {
 
   get api(): ApiConfigType {
     return ApiConfig.parseConfigFromEnvironment(process.env);
+  }
+
+  get apiClient(): ApiClientConfigType {
+    return ApiClientConfig.parseConfigFromEnvironment(process.env);
   }
 }

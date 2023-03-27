@@ -11,6 +11,8 @@ export class S3Service {
     return new S3({
       apiVersion: 'latest',
       params: { Bucket: this.serverConfig.s3.bucket, Key, Body: stream },
+      accessKeyId: this.serverConfig.s3.accessKey,
+      secretAccessKey: this.serverConfig.s3.secretAccessKey,
     });
   }
 }
