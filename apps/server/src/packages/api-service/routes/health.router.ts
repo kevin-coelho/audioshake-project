@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 export function getHealthRouter() {
+  // simple health check router (for load balancer pings etc.)
   return (
     Router({ mergeParams: true })
       /**

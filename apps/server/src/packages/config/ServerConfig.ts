@@ -14,6 +14,10 @@ import { S3ConfigType } from './s3.config';
 import { ApiConfigType } from './api.config';
 import { ApiClientConfigType } from './api-client.config';
 
+/**
+ * Container to hold configs relevant to back end services. These configs contain
+ * sensitive information and SHOULD NOT be exposed to any clients.
+ */
 @Service()
 export class ServerConfig {
   constructor() {

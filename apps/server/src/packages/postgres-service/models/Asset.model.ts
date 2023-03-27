@@ -20,6 +20,9 @@ const uploadValidator = joi
   })
   .required();
 
+/**
+ * DB model to represent an asset object.
+ */
 export class AssetModel extends BaseModel {
   // uuid v5. hash of s3 bucket-key with namespace
   id!: string;
@@ -62,6 +65,9 @@ export class AssetModel extends BaseModel {
     return uuidv5(`${bucket}-${key}`, serverConfig.common.uuidNamespace);
   }
 
+  /**
+   * For table migration. Desired indexes for the asset table.
+   */
   static get indexes() {
     return {
       primaryId: ['id'],
@@ -69,6 +75,14 @@ export class AssetModel extends BaseModel {
     };
   }
 
+  /**
+   * Parse fields from a POST request to upload an asset and generate a db-ready
+   * model representation.
+   * @param contentType
+   * @param filename
+   * @param fileSize
+   * @param bucket
+   */
   static fromUploadedAsset(
     contentType: string,
     filename: string,

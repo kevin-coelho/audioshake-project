@@ -2,6 +2,9 @@ import path from 'path';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
+/**
+ * Class to encapsulate swagger documentation functions
+ */
 export class SwaggerService {
   static getSwaggerOptions() {
     return {

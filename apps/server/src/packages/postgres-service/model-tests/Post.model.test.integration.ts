@@ -11,7 +11,7 @@ import {
   teardownPostFixtures,
 } from '../test-fixtures/post.fixtures';
 
-describe('Asset model', function () {
+describe('Post model', function () {
   after(async function () {
     await teardownPostFixtures();
   });

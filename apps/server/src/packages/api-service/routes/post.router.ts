@@ -14,6 +14,7 @@ export function getPostRouter() {
   return Router({
     mergeParams: true,
   })
+    // create a post
     .post(
       '/',
       celebrate({
@@ -47,6 +48,7 @@ export function getPostRouter() {
         }
       },
     )
+    // get multiple posts
     .get(
       '/',
       celebrate({
@@ -84,6 +86,7 @@ export function getPostRouter() {
         }
       },
     )
+    // get a single post
     .get(
       '/:postId',
       celebrate({
@@ -108,6 +111,7 @@ export function getPostRouter() {
         }
       },
     )
+    // update a post
     .put(
       '/:postId',
       celebrate({
@@ -152,6 +156,7 @@ export function getPostRouter() {
         }
       },
     )
+    // delete a post
     .delete(
       '/:postId',
       celebrate({

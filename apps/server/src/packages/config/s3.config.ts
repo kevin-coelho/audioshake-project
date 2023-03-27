@@ -5,7 +5,7 @@ import joi from 'joi';
 import { S3EnvironmentVariables } from '../types/s3.types';
 
 /**
- * Export configuration for postgres service.
+ * Export configuration for the AWS S3 SDK
  * @param env
  */
 export function parseConfigFromEnvironment(

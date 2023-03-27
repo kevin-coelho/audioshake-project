@@ -1,16 +1,21 @@
+// deps
 import { Container } from 'typedi';
 import { Router } from 'express';
 import Busboy from 'busboy';
+import { Stream } from 'stream';
+
+// local deps
 import { S3Service } from '../../s3-service/S3.service';
 import { PostgresService } from '../../postgres-service';
-import { Stream } from 'stream';
 import { AssetModel } from '../../postgres-service/models/Asset.model';
 import { isDevOrTestEnvironment } from '../../util-fns/env.util';
 
 export function getAssetRouter() {
   return Router({
     mergeParams: true,
-  }).post('/', async (req, res, next) => {
+  })
+    // POST /asset (upload file)
+    .post('/', async (req, res, next) => {
     const postgresService = Container.get(PostgresService);
     const s3Service = Container.get(S3Service);
     try {
@@ -75,6 +80,7 @@ export function getAssetRouter() {
                   });
                 });
             } catch (err) {
+              // request will get rejected with bad mime type or other errors
               return reject(err);
             }
           },

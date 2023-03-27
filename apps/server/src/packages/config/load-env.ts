@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 /**
  * Attempt to laod environment variables into the runtime. Built to work in:
- * node.js runtimes, next.js runtime
+ * node.js runtimes
  */
 export function loadEnv() {
   if (!process.env.NODE_ENV) {

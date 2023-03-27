@@ -3,6 +3,9 @@ import { ServerConfig } from '../config';
 import { S3 } from 'aws-sdk';
 import { Stream } from 'stream';
 
+/**
+ * Class to encapsulate the S3 SDK.
+ */
 @Service()
 export class S3Service {
   constructor(private readonly serverConfig: ServerConfig) {}

@@ -9,6 +9,9 @@ import { UUID_V4_SCHEMA, UUID_V5_SCHEMA } from '../lib/constants';
 import { Model, ModelObject } from 'objection';
 import { AssetModel } from './Asset.model';
 
+/**
+ * Db model to represent a post object.
+ */
 export class PostModel extends BaseModel {
   // uuid v4
   id!: string;
@@ -48,6 +51,15 @@ export class PostModel extends BaseModel {
     };
   }
 
+  /**
+   * Parse fields from a POST request to create a post and generate a db-ready
+   * model representation.
+   * @param title
+   * @param content
+   * @param category
+   * @param assetId
+   * @param asset
+   */
   static fromJsonPost(
     title: string,
     content: string,

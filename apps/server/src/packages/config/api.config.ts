@@ -13,7 +13,7 @@ const environmentConfigValidator = joi
   .required();
 
 /**
- * Export configuration for postgres service.
+ * Export configuration for main API service.
  * @param env
  */
 export function parseConfigFromEnvironment(

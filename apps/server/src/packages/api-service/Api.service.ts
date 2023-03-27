@@ -14,16 +14,16 @@ import { SwaggerService } from '../swagger-service/Swagger.service';
 import { isDevOrTestEnvironment } from '../util-fns/env.util';
 
 /**
- * This class encapsulates the apollo graphql service (http server). IMPORTANT NOTE:
+ * This class encapsulates the API service (http server). IMPORTANT NOTE:
  * constructing an instance of this class will NOT automatically start listening
- * for graphql queries! The init() method must be called first. Init will ensure
- * the proper dependencies are connected (such as redis, postgres), and start listening
+ * for requests! The init() method must be called first. Init will ensure
+ * the proper dependencies are connected (such as postgres), and start listening
  * on a port determined by the global config (see src/packages/config).
  *
  * @example
- * const apolloGraphqlService = Container.get(ApolloGraphlService);
- * await apolloGraphqlService.init(); // server starts listening here
- * await apolloGraphqlService.shutdown(); // initiate graceful http shutdown
+ * const apiService = Container.get(ApiService);
+ * await apiService.init(); // server starts listening here
+ * await apiService.shutdown(); // initiate graceful http shutdown
  */
 @Service()
 export class ApiService {
