@@ -11,3 +11,8 @@ export const POSTGRES_FOREIGN_KEY_OPS = {
   SET_NULL: 'SET NULL',
   NO_ACTION: 'NO ACTION',
 };
+
+export enum PostgresDateSortOperators {
+  asc = 'asc',
+  desc = 'desc',
+}

@@ -1,0 +1,201 @@
+openapi: 3.0.0
+info: Post Router API Spec
+components:
+  schemas:
+    PostObject:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID v5, unique id for the post
+        title:
+          type: string
+          description: Title of the post
+        content:
+          type: string
+          description: Body of the post
+        category:
+          type: string
+          description: Category of the post
+        assetId:
+          type: string
+          description: UUID v5, unique id for the post's linked asset
+        createdAt:
+          type: string
+          format: date-time
+          description: When the post was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the post was last updated
+paths:
+  /post:
+    post:
+      description: Create a post in the db
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Post title
+                content:
+                  type: string
+                  description: Post body
+                category:
+                  type: string
+                  description: Post category
+                assetId:
+                  type: string
+                  description: UUID v5 of linked asset
+              required:
+                - title
+                - content
+                - category
+                - assetId
+      responses:
+        200:
+          description: Successful creation of post in the db
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    enum: [ 'OK' ]
+                  id:
+                    type: string
+                    description: Id of the created post
+        400:
+          description: Something went wrong with creating the post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Linked assetId {id} does not exist
+    get:
+      description: Get all posts in the database
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+            required: false
+            description: Filter returned posts by category
+        - in: query
+          name: sort
+          schema:
+            type: string
+            required: false
+            description: Sort returned posts by ascending or descending date
+            enum: [ 'asc', 'desc' ]
+      responses:
+        200:
+          description: List of post objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PostObject"
+  /post/{id}:
+    put:
+      description: Update a post in the db
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id of the post to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Post title
+                content:
+                  type: string
+                  description: Post body
+                category:
+                  type: string
+                  description: Post category
+                assetId:
+                  type: string
+                  description: UUID v5 of linked asset
+              required:
+                - title
+                - content
+                - category
+                - assetId
+      responses:
+        200:
+          description: Successful update of post in the db
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    enum: [ 'OK' ]
+        400:
+          description: Something went wrong with creating the post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Post with id {id} does not exist
+    get:
+      description: Get a single post by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id of the requested post
+      responses:
+        200:
+          description: Single post object by id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostObject"
+    delete:
+      description: Delete a single post in the db by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id of the post to delete
+      responses:
+        200:
+          description: Post was successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    enum: ['OK']
+                  id:
+                    type: string
+                    description: Id of the deleted post

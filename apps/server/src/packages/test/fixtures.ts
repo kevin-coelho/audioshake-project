@@ -1,5 +1,7 @@
 import 'reflect-metadata';
-process.env.NODE_ENV = 'test';
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'test';
+}
 
 // deps
 import { Container } from 'typedi';
@@ -7,8 +9,15 @@ import { program } from 'commander';
 
 // local deps
 import { PostgresService } from '../postgres-service';
-import { loadAssetFixtures, teardownAssetFixtures } from '../postgres-service/test-fixtures/asset.fixtures';
-import { isTestEnvironment } from '../util-fns/env.util';
+import {
+  loadAssetFixtures,
+  teardownAssetFixtures,
+} from '../postgres-service/test-fixtures/asset.fixtures';
+import { isDevOrTestEnvironment } from '../util-fns/env.util';
+import {
+  loadPostFixtures,
+  teardownPostFixtures,
+} from '../postgres-service/test-fixtures/post.fixtures';
 
 /**
  * This is a standalone utility script intended to be run if test fixtures need to be
@@ -24,9 +33,9 @@ import { isTestEnvironment } from '../util-fns/env.util';
  * NODE_ENV=test npx ts-node fixtures.ts up
  */
 async function main() {
-  if (!isTestEnvironment()) {
+  if (!isDevOrTestEnvironment()) {
     throw new Error(
-      'SAFETY ERROR: Do not use teardown-only.ts in non-test environments',
+      'SAFETY ERROR: Do not use fixtures.ts in non-dev environments',
     );
   }
 
@@ -66,6 +75,7 @@ type ProgramOptions = {
   up: boolean;
   all: boolean;
   asset: boolean;
+  post: boolean;
 };
 
 // map from program options to their respective loader functions
@@ -74,9 +84,11 @@ type ProgramOptions = {
 const programFixtureMapping = {
   up: {
     asset: async () => loadAssetFixtures(),
+    post: async () => loadPostFixtures(),
   },
   down: {
     asset: async () => teardownAssetFixtures(),
+    post: async () => teardownPostFixtures(),
   },
 };
 

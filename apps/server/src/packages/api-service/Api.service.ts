@@ -1,15 +1,17 @@
 // deps
 import { Service } from 'typedi';
 import gracefulShutdown from 'http-graceful-shutdown';
-import express, { Express } from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 import http, { Server } from 'http';
 import { errors as celebrateErrors } from 'celebrate';
+import bodyParser from 'body-parser';
 
 // local deps
 import { ServerConfig } from '../config';
 import { PostgresService } from '../postgres-service';
 import { getRouter } from './routes';
 import { SwaggerService } from '../swagger-service/Swagger.service';
+import { isDevOrTestEnvironment } from '../util-fns/env.util';
 
 /**
  * This class encapsulates the apollo graphql service (http server). IMPORTANT NOTE:
@@ -39,7 +41,7 @@ export class ApiService {
   }
 
   async init() {
-    this.applyMiddleware();
+    this.applyMiddleware(this.app);
     this.applyRoutes(this.app);
     this.applyErrorMiddleware(this.app);
 
@@ -57,12 +59,30 @@ export class ApiService {
     console.log(`🚀  Server ready on port :${this.config.api.port}`);
   }
 
-  applyMiddleware(/*app: Express*/) {
-    //pass
+  applyMiddleware(app: Express) {
+    app.use(
+      bodyParser.urlencoded({
+        extended: true,
+      }),
+    );
+    app.use(bodyParser.json());
   }
 
   applyErrorMiddleware(app: Express) {
     app.use(celebrateErrors());
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+      console.error(err);
+      const result: { name: string; message: string; stack?: string } = {
+        name: err.name,
+        message: err.message,
+        stack: undefined,
+      };
+      if (isDevOrTestEnvironment()) {
+        result.stack = err.stack;
+      }
+      return res.status(500).json(result);
+    });
   }
 
   applyRoutes(app: Express) {

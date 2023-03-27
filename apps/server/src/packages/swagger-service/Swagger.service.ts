@@ -13,7 +13,10 @@ export class SwaggerService {
           version: '1.0.0',
         },
       },
-      apis: [path.resolve(path.join(__dirname, '../../**/*.ts'))],
+      apis: [
+        path.resolve(path.join(__dirname, '../../**/*.ts')),
+        path.resolve(path.join(__dirname, '../../**/*.swagger.yaml')),
+      ],
     };
   }
 
