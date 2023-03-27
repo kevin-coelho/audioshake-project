@@ -20,6 +20,7 @@ describe('Post Router', function () {
   let firstPostId: string | undefined = undefined;
   let firstAssetId: string | undefined = undefined;
   let secondPostId: string | undefined = undefined;
+  let secondAssetId: string | undefined = undefined;
 
   after(async function () {
     const postgresService = Container.get(PostgresService);
@@ -131,5 +132,57 @@ describe('Post Router', function () {
     assert.isTrue(
       moment.utc(data[0].createdAt).isBefore(moment.utc(data[1].createdAt)),
     );
+  });
+
+  it('PUT /post/:id', async function () {
+    const filePath = path.resolve(
+      path.join(__dirname, '../test-fixtures/temp-2.webp'),
+    );
+    const { id: assetId } = await uploadFile(filePath, apiInstance);
+    secondAssetId = assetId;
+    const updateData = {
+      title: 'Updated Title 2',
+      content: 'Updated Content 2',
+      category: 'Updated Category 2',
+      assetId: secondAssetId,
+    };
+
+    await apiInstance.request<{ msg: string }>({
+      url: `/post/${secondPostId}`,
+      method: 'PUT',
+      data: updateData,
+    });
+    const { data } = await apiInstance.request<{
+      id: string;
+      title: string;
+      content: string;
+      category: string;
+      assetId: string;
+    }>({
+      url: `/post/${secondPostId}`,
+      method: 'get',
+    });
+    assert.deepEqual(
+      {
+        title: data.title,
+        content: data.content,
+        category: data.category,
+        assetId: data.assetId,
+      },
+      updateData,
+    );
+  });
+
+  it('DELETE /post/:id', async function () {
+    await apiInstance.request({
+      url: `/post/${secondPostId}`,
+      method: 'delete',
+    });
+    const { data } = await apiInstance.request<Array<{ id: string }>>({
+      url: '/post',
+      method: 'get',
+    });
+    assert.lengthOf(data, 1);
+    assert.equal(data[0].id, firstPostId);
   });
 });
