@@ -13,11 +13,12 @@ import { UUID_V5_SCHEMA } from '../lib/constants';
 import { Model } from 'objection';
 import { PostModel } from './Post.model';
 
-const uploadValidator = joi.object({
-  contentType: joi.string().required().custom(validateContentType),
-  fileSize: joi.number().integer().greater(0).required(),
-  filename: joi.string().required(),
-}).required();
+const uploadValidator = joi
+  .object({
+    contentType: joi.string().required().custom(validateContentType),
+    filename: joi.string().required(),
+  })
+  .required();
 
 export class AssetModel extends BaseModel {
   // uuid v5. hash of s3 bucket-key with namespace
@@ -58,10 +59,7 @@ export class AssetModel extends BaseModel {
    */
   static getUuid(bucket: string, key: string) {
     const serverConfig = Container.get(ServerConfig);
-    return uuidv5(
-      `${bucket}-${key}`,
-      serverConfig.common.uuidNamespace,
-    );
+    return uuidv5(`${bucket}-${key}`, serverConfig.common.uuidNamespace);
   }
 
   static get indexes() {
@@ -71,10 +69,13 @@ export class AssetModel extends BaseModel {
     };
   }
 
-  static fromUploadedAsset(contentType: string, fileSize: number, filename: string, bucket?: string): AssetModel {
+  static fromUploadedAsset(
+    contentType: string,
+    filename: string,
+    bucket?: string,
+  ): AssetModel {
     const { value, error } = uploadValidator.validate({
       contentType,
-      fileSize,
       filename,
     });
     if (error) {
@@ -92,7 +93,6 @@ export class AssetModel extends BaseModel {
     assetModel.bucket = bucket;
     assetModel.contentType = value.contentType;
     assetModel.key = key;
-    assetModel.fileSize = value.fileSize;
     assetModel.filename = sanitizedFilename;
     const now = moment.utc().toDate();
     assetModel.createdAt = now;
@@ -136,14 +136,7 @@ export class AssetModel extends BaseModel {
         createdAt: JsonSchemaTypes.DATE(),
         updatedAt: JsonSchemaTypes.DATE(),
       },
-      required: [
-        'id',
-        'bucket',
-        'key',
-        'contentType',
-        'fileSize',
-        'filename',
-      ],
+      required: ['id', 'bucket', 'key', 'contentType', 'fileSize', 'filename'],
     };
   }
 }
@@ -160,7 +153,11 @@ function validateContentType(
 ): string {
   try {
     const mimeType = mime.contentType(value as string);
-    joi.assert(mimeType, joi.string().required(), `Unrecognized contentType: ${value}`);
+    joi.assert(
+      mimeType,
+      joi.string().required(),
+      `Unrecognized contentType: ${value}`,
+    );
     return mimeType as string;
   } catch (err) {
     if (!(err instanceof Error)) {

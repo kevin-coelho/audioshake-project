@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info: Post Router API Spec
+paths:
+  /asset:
+    post:
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Successful asset upload
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    enum: ['OK']
+                  id:
+                    type: string
+                    description: ID of the generated asset
