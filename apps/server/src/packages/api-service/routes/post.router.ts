@@ -1,6 +1,6 @@
 // deps
 import { Router } from 'express';
-import { Joi, Segments, celebrate } from 'celebrate';
+import { celebrate, Joi, Segments } from 'celebrate';
 import { Container } from 'typedi';
 
 // local deps
@@ -52,9 +52,7 @@ export function getPostRouter() {
       celebrate({
         [Segments.QUERY]: Joi.object({
           category: Joi.string().optional(),
-          sort: Joi.string()
-            .optional()
-            .valid(...Object.values(PostgresDateSortOperators)),
+          sort: Joi.string().optional().valid('earliestFirst', 'latestFirst'),
         }),
       }),
       async (req, res, next) => {
@@ -73,7 +71,9 @@ export function getPostRouter() {
           if (sort) {
             builder.orderBy(
               `${Post.tableName}.createdAt`,
-              sort as PostgresDateSortOperators,
+              sort === 'latestFirst'
+                ? PostgresDateSortOperators.desc
+                : PostgresDateSortOperators.asc,
             );
           }
           const posts = await builder;

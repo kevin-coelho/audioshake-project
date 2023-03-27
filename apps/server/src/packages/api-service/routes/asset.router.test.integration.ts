@@ -1,42 +1,14 @@
 // deps
 import 'reflect-metadata';
-import fs from 'fs';
 import path from 'path';
-import axios, { AxiosInstance } from 'axios';
-import concat from 'concat-stream';
-import FormData from 'form-data';
+import axios from 'axios';
 import { Container } from 'typedi';
+import { assert } from 'chai';
 
 // local deps
 import { ServerConfig } from '../../config';
 import { PostgresService } from '../../postgres-service';
-import { assert } from 'chai';
-
-async function uploadFile(path: string, apiInstance: AxiosInstance) {
-  const filestream = fs.createReadStream(path);
-  const fd = new FormData();
-  fd.append('file', filestream);
-  return new Promise<{
-    msg: string;
-    id: string;
-    fileSize: number;
-  }>((resolve, reject) => {
-    filestream.on('error', (err) => reject(err));
-    fd.pipe(
-      concat((data) => {
-        apiInstance
-          .request({
-            url: '/asset',
-            method: 'POST',
-            data,
-            headers: fd.getHeaders(),
-          })
-          .then((res) => resolve(res.data))
-          .catch((err) => reject(err));
-      }),
-    );
-  });
-}
+import { uploadFile } from '../test-utils/upload-file';
 
 describe('Asset Router', function () {
   const serverConfig = Container.get(ServerConfig);

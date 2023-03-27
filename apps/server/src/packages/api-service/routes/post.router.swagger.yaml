@@ -94,8 +94,8 @@ paths:
           schema:
             type: string
             required: false
-            description: Sort returned posts by ascending or descending date
-            enum: [ 'asc', 'desc' ]
+            description: Sort returned posts by earliest or latest first
+            enum: [ 'earliestFirst', 'latestFirst' ]
       responses:
         200:
           description: List of post objects
